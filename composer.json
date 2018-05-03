@@ -1,0 +1,40 @@
+{
+    "name": "kbra/cache",
+    "description": "KBRA Cache",
+    "type": "project",
+    "license": "proprietary",
+    "config": {
+        "sort-packages": true
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.kbra.com"
+        }
+    ],
+    "require": {
+        "phpfastcache/phpfastcache": "^6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.3",
+        "phploc/phploc": "^3.0",
+        "pdepend/pdepend": "^2.5",
+        "phpmd/phpmd": "^2.6",
+        "squizlabs/php_codesniffer": "^2.0",
+        "sebastian/phpcpd": "^3.0",
+        "vimeo/psalm": "^0.3.68"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kbra\\Cache\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kbra\\Cache\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

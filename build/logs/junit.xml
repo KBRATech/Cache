@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="KBRA Cache Test Suite" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.011351">
+    <testsuite name="Kbra\Cache\Tests\CacheServiceTest" file="/mnt/nug/home/er0k/work/kbra-cache/tests/CacheServiceTest.php" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.011351">
+      <testcase name="testSet" class="Kbra\Cache\Tests\CacheServiceTest" classname="Kbra.Cache.Tests.CacheServiceTest" file="/mnt/nug/home/er0k/work/kbra-cache/tests/CacheServiceTest.php" line="38" assertions="3" time="0.011212"/>
+      <testcase name="testGet" class="Kbra\Cache\Tests\CacheServiceTest" classname="Kbra.Cache.Tests.CacheServiceTest" file="/mnt/nug/home/er0k/work/kbra-cache/tests/CacheServiceTest.php" line="72" assertions="1" time="0.000139"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
