@@ -2,7 +2,7 @@
     "name": "kbra/cache",
     "description": "KBRA Cache",
     "type": "project",
-    "license": "proprietary",
+    "license": "Apache 2.0",
     "config": {
         "sort-packages": true
     },
