@@ -2,14 +2,13 @@
 
 namespace Kbra\Cache;
 
-use phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface;
-use Psr\Cache\CacheItemInterface;
 use phpFastCache\CacheManager;
+use phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface;
+use phpFastCache\Core\Item\ExtendedCacheItemInterface;
+
 
 class CacheService
 {
-    const CACHE_TIMEOUT_IN_SECONDS = 600;
-
     /** @var ExtendedCacheItemPoolInterface */
     private $cachePool;
 
@@ -18,26 +17,9 @@ class CacheService
      */
     public function __construct(array $settings)
     {
-        if ($this->cachePool) {
-            return $this->cachePool;
-        }
-
         CacheManager::setDefaultConfig($settings['config']);
+
         $this->cachePool = CacheManager::getInstance($settings['driver']);
-
-        return $this->cachePool;
-    }
-
-    /**
-     * @param string $name
-     * @param array $options
-     * @return mixed|null
-     */
-    public function get($name, array $options = [])
-    {
-        $cacheItem = $this->getCacheItem($name, $options);
-
-        return $cacheItem->get();
     }
 
     /**
@@ -53,7 +35,7 @@ class CacheService
         $value,
         array $options = [],
         $tags = [],
-        $ttl = self::CACHE_TIMEOUT_IN_SECONDS
+        $ttl = null
     ) {
         $cacheItem = $this->getCacheItem($name, $options);
 
@@ -61,7 +43,23 @@ class CacheService
             $cacheItem->addTags($this->normalizeTags($tags));
         }
 
+        if (!$ttl || !is_int($ttl)) {
+            $ttl = CacheManager::getDefaultConfig()['defaultTtl'];
+        }
+
         return $this->setCacheItem($cacheItem, $value, $ttl);
+    }
+
+    /**
+     * @param string $name
+     * @param array $options
+     * @return mixed|null
+     */
+    public function get($name, array $options = [])
+    {
+        $cacheItem = $this->getCacheItem($name, $options);
+
+        return $cacheItem->get();
     }
 
     /**
@@ -84,7 +82,7 @@ class CacheService
     /**
      * @param string $name
      * @param array $options
-     * @return CacheItemInterface
+     * @return ExtendedCacheItemInterface
      */
     private function getCacheItem($name, array $options = [])
     {
@@ -94,12 +92,12 @@ class CacheService
     }
 
     /**
-     * @param CacheItemInterface $cacheItem
+     * @param ExtendedCacheItemInterface $cacheItem
      * @param mixed $value
      * @param int $ttl
      * @return bool
      */
-    private function setCacheItem(CacheItemInterface $cacheItem, $value, $ttl)
+    private function setCacheItem(ExtendedCacheItemInterface $cacheItem, $value, $ttl)
     {
         $cacheItem->set($value)
             ->expiresAfter($ttl);
