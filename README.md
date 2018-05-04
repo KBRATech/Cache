@@ -7,7 +7,7 @@ A simple cache library
 ### Prerequisites
 
 * PHP 5.6 or 7
-* Some caching driver supported by phpfastcache
+* Some [caching driver](https://github.com/PHPSocialNetwork/phpfastcache/blob/final/docs/DRIVERS.md) supported by phpfastcache
 
 ### Installing
 
@@ -62,7 +62,7 @@ And to get the cached result:
 $result = $cacheService->get($query, $params);
 ```
 
-You can also save some tags associated with the cache data, which can be use later to remove items from the cache:
+You can also save some tags associated with the cache data, which can be used later to remove items from the cache:
 
 ```
 $tags = [$userName, 'portfolio'];
