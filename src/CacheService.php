@@ -34,7 +34,7 @@ class CacheService
         $name,
         $value,
         array $options = [],
-        $tags = [],
+        array $tags = [],
         $ttl = null
     ) {
         $cacheItem = $this->getCacheItem($name, $options);
