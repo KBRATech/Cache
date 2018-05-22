@@ -100,15 +100,6 @@ class CacheService
 
     /**
      * @codeCoverageIgnore
-     * @param ExtendedCacheItemPoolInterface $cachePool
-     */
-    public function setCachePool($cachePool)
-    {
-        $this->cachePool = $cachePool;
-    }
-
-    /**
-     * @codeCoverageIgnore
      * @return ExtendedCacheItemPoolInterface
      */
     protected function getCachePool()
