@@ -33,10 +33,8 @@ class CacheService
                 $this->cachePool = $this->getCachePool();
             } catch (\RedisException $e) {
                 if ($tries >= $this->settings['maxRetries']) {
-                    throw new CacheServiceException(
-                        sprintf("Could not connect to %s after %d tries", $this->settings['driver'], $tries),
-                        666,
-                        $e
+                    throw CacheServiceException::connectionFailed(
+                        $this->settings['driver'], $tries, $e
                     );
                 }
             }
