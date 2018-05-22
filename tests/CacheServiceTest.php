@@ -3,6 +3,7 @@
 namespace Kbra\Cache\Tests;
 
 use Kbra\Cache\CacheService;
+use Kbra\Cache\CacheServiceException;
 use phpFastCache\Core\Pool\ExtendedCacheItemPoolInterface;
 use phpFastCache\Core\Item\ExtendedCacheItemInterface;
 use phpFastCache\CacheManager;
@@ -31,6 +32,7 @@ class CacheServiceTest extends TestCase
     {
         $this->settings = [
             'driver' => 'devnull',
+            'maxRetries' => 2,
             'config' => [],
         ];
 
@@ -41,9 +43,25 @@ class CacheServiceTest extends TestCase
         $this->cacheItem = $this->createMock(ExtendedCacheItemInterface::class);
 
         $this->cacheService = new CacheService($this->settings);
-        $this->cacheService->setCachePool($this->cachePool);
+
+        $this->cacheService = $this->getMockBuilder(CacheService::class)
+            ->setConstructorArgs([$this->settings])
+            ->setMethods(['getCachePool'])
+            ->getMock();
 
         $this->ttl = CacheManager::getDefaultConfig()['defaultTtl'];
+    }
+
+    public function testConnectionRetry()
+    {
+        $this->cacheService
+            ->expects($this->exactly($this->settings['maxRetries']))
+            ->method('getCachePool')
+            ->will($this->throwException(new \RedisException()));
+
+        $this->expectException(CacheServiceException::class);
+
+        $this->cacheService->connect();
     }
 
     public function testSet()
@@ -51,6 +69,11 @@ class CacheServiceTest extends TestCase
         $name = 'this is a test';
         $options = ['this','is','a','test'];
         $value = 'this test is super awesome';
+
+        $this->cacheService
+            ->expects($this->at(1))
+            ->method('getCachePool')
+            ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
             ->expects($this->once())
@@ -85,6 +108,11 @@ class CacheServiceTest extends TestCase
         $value = 'this test is super awesome';
         $tags = ['TAG1','Tag2','tagThree'];
         $ttl = 11;
+
+        $this->cacheService
+            ->expects($this->at(1))
+            ->method('getCachePool')
+            ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
             ->expects($this->once())
@@ -122,6 +150,11 @@ class CacheServiceTest extends TestCase
         $name = 'this is a test';
         $options = ['this','is','a','test'];
 
+        $this->cacheService
+            ->expects($this->at(1))
+            ->method('getCachePool')
+            ->will($this->returnValue($this->cachePool));
+
         $this->cachePool
             ->expects($this->once())
             ->method('getItem')
@@ -137,6 +170,11 @@ class CacheServiceTest extends TestCase
     public function testClearTags()
     {
         $tags = ['taco','hotdog'];
+
+        $this->cacheService
+            ->expects($this->at(1))
+            ->method('getCachePool')
+            ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
             ->expects($this->once())
