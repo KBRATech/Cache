@@ -12,6 +12,9 @@ class CacheService
     /** @var ExtendedCacheItemPoolInterface */
     private $cachePool;
 
+    /** @var array */
+    private $settings;
+
     /**
      * @param array $settings
      */
@@ -26,21 +29,23 @@ class CacheService
     public function connect()
     {
         $tries = 0;
+        $connectionException = null;
 
         do {
             $tries++;
             try {
                 $this->cachePool = $this->getCachePool();
+                return;
             } catch (\RedisException $e) {
-                if ($tries >= $this->settings['maxRetries']) {
-                    throw CacheServiceException::connectionFailed(
-                        $this->settings['driver'], $tries, $e
-                    );
-                }
+                $connectionException = $e;
             }
         } while (
             !is_a($this->cachePool, 'ExtendedCacheItemPoolInterface')
             && $tries < $this->settings['maxRetries']
+        );
+
+        throw CacheServiceException::connectionFailed(
+            $this->settings['driver'], $tries, $connectionException
         );
     }
 
@@ -59,10 +64,6 @@ class CacheService
         array $tags = [],
         $ttl = null
     ) {
-        if (!$this->cachePool) {
-            $this->connect();
-        }
-
         $cacheItem = $this->getCacheItem($name, $options);
 
         if ($tags) {
@@ -83,10 +84,6 @@ class CacheService
      */
     public function get($name, array $options = [])
     {
-        if (!$this->cachePool) {
-            $this->connect();
-        }
-
         $cacheItem = $this->getCacheItem($name, $options);
 
         return $cacheItem->get();
@@ -98,11 +95,7 @@ class CacheService
      */
     public function clearTags(array $tags)
     {
-        if (!$this->cachePool) {
-            $this->connect();
-        }
-
-        return $this->cachePool->deleteItemsByTags($this->normalizeTags($tags));
+        return $this->getCachePool()->deleteItemsByTags($this->normalizeTags($tags));
     }
 
     /**
@@ -138,7 +131,7 @@ class CacheService
     {
         $key = md5($name . json_encode($options));
 
-        return $this->cachePool->getItem($key);
+        return $this->getCachePool()->getItem($key);
     }
 
     /**
@@ -152,7 +145,7 @@ class CacheService
         $cacheItem->set($value)
             ->expiresAfter($ttl);
 
-        return $this->cachePool->save($cacheItem);
+        return $this->getCachePool()->save($cacheItem);
     }
 
     /**

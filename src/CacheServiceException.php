@@ -3,13 +3,14 @@
 namespace Kbra\Cache;
 
 use Exception;
+use Throwable;
 
 class CacheServiceException extends Exception
 {
     /**
      * @param string $cacheDriver
      * @param int $numberOfTries
-     * @param throwable $previousException
+     * @param Throwable $previousException
      * @return CacheServiceException
      */
     public static function connectionFailed($cacheDriver, $numberOfTries, $previousException = null) {
