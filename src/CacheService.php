@@ -113,12 +113,9 @@ class CacheService
         return $normalizedTags;
     }
 
-    /**
-     * @return ExtendedCacheItemPoolInterface
-     */
     public function connect()
     {
-        return $this->getCachePool();
+        $this->getCachePool();
     }
 
     /**

@@ -72,11 +72,10 @@ class CacheServiceTest extends TestCase
     public function testConnectionSucceeds()
     {
         $cacheService = new CacheService($this->settings);
-        $cachePool = $cacheService->connect();
+        $cacheService->connect();
+        $result = $cacheService->get('hotdog');
 
-        $cacheService->clearTags(['taco']);
-
-        $this->assertInstanceOf(ExtendedCacheItemPoolInterface::class, $cachePool);
+        $this->assertNull($result);
     }
 
     public function testSet()
