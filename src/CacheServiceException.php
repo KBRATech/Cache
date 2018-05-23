@@ -7,6 +7,8 @@ use Throwable;
 
 class CacheServiceException extends Exception
 {
+    const MSG_CONNECTION_FAILED = "Could not connect to %s after %d tries";
+
     /**
      * @param string $cacheDriver
      * @param int $numberOfTries
@@ -14,7 +16,7 @@ class CacheServiceException extends Exception
      * @return CacheServiceException
      */
     public static function connectionFailed($cacheDriver, $numberOfTries, $previousException = null) {
-        $message = sprintf("Could not connect to %s after %d tries", $cacheDriver, $numberOfTries);
+        $message = sprintf(self::MSG_CONNECTION_FAILED, $cacheDriver, $numberOfTries);
 
         return new static($message, 666, $previousException);
     }

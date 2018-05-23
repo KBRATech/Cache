@@ -24,32 +24,6 @@ class CacheService
     }
 
     /**
-     * @throws CacheServiceException
-     */
-    public function connect()
-    {
-        $tries = 0;
-        $connectionException = null;
-
-        do {
-            $tries++;
-            try {
-                $this->cachePool = $this->getCachePool();
-                return;
-            } catch (\RedisException $e) {
-                $connectionException = $e;
-            }
-        } while (
-            !is_a($this->cachePool, 'ExtendedCacheItemPoolInterface')
-            && $tries < $this->settings['maxRetries']
-        );
-
-        throw CacheServiceException::connectionFailed(
-            $this->settings['driver'], $tries, $connectionException
-        );
-    }
-
-    /**
      * @param string $name
      * @param mixed $value
      * @param array $options
@@ -99,21 +73,6 @@ class CacheService
     }
 
     /**
-     * @codeCoverageIgnore
-     * @return ExtendedCacheItemPoolInterface
-     */
-    protected function getCachePool()
-    {
-        if ($this->cachePool) {
-            return $this->cachePool;
-        }
-
-        CacheManager::setDefaultConfig($this->settings['config']);
-
-        return CacheManager::getInstance($this->settings['driver']);
-    }
-
-    /**
      * @param string $name
      * @param array $options
      * @return ExtendedCacheItemInterface
@@ -152,5 +111,46 @@ class CacheService
         }
 
         return $normalizedTags;
+    }
+
+    /**
+     * @return ExtendedCacheItemPoolInterface
+     */
+    public function connect()
+    {
+        CacheManager::setDefaultConfig($this->settings['config']);
+        $this->cachePool = CacheManager::getInstance($this->settings['driver']);
+
+        return $this->cachePool;
+    }
+
+    /**
+     * @throws CacheServiceException
+     * @return ExtendedCacheItemPoolInterface
+     */
+    private function getCachePool()
+    {
+        if ($this->cachePool) {
+            return $this->cachePool;
+        }
+
+        $tries = 0;
+        $connectionException = null;
+
+        do {
+            $tries++;
+            try {
+                return $this->connect();
+            } catch (\RedisException $e) {
+                $connectionException = $e;
+            }
+        } while (
+            !is_a($this->cachePool, 'ExtendedCacheItemPoolInterface')
+            && $tries < $this->settings['maxRetries']
+        );
+
+        throw CacheServiceException::connectionFailed(
+            $this->settings['driver'], $tries, $connectionException
+        );
     }
 }
