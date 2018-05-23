@@ -12,14 +12,15 @@ class CacheService
     /** @var ExtendedCacheItemPoolInterface */
     private $cachePool;
 
+    /** @var array */
+    private $settings;
+
     /**
      * @param array $settings
      */
     public function __construct(array $settings)
     {
-        CacheManager::setDefaultConfig($settings['config']);
-
-        $this->cachePool = CacheManager::getInstance($settings['driver']);
+        $this->settings = $settings;
     }
 
     /**
@@ -68,15 +69,7 @@ class CacheService
      */
     public function clearTags(array $tags)
     {
-        return $this->cachePool->deleteItemsByTags($this->normalizeTags($tags));
-    }
-
-    /**
-     * @param ExtendedCacheItemPoolInterface $cachePool
-     */
-    public function setCachePool($cachePool)
-    {
-        $this->cachePool = $cachePool;
+        return $this->getCachePool()->deleteItemsByTags($this->normalizeTags($tags));
     }
 
     /**
@@ -88,7 +81,7 @@ class CacheService
     {
         $key = md5($name . json_encode($options));
 
-        return $this->cachePool->getItem($key);
+        return $this->getCachePool()->getItem($key);
     }
 
     /**
@@ -102,7 +95,7 @@ class CacheService
         $cacheItem->set($value)
             ->expiresAfter($ttl);
 
-        return $this->cachePool->save($cacheItem);
+        return $this->getCachePool()->save($cacheItem);
     }
 
     /**
@@ -118,5 +111,51 @@ class CacheService
         }
 
         return $normalizedTags;
+    }
+
+    public function connect()
+    {
+        $this->getCachePool();
+    }
+
+    /**
+     * @throws CacheServiceException
+     * @return ExtendedCacheItemPoolInterface
+     */
+    private function getCachePool()
+    {
+        if ($this->cachePool) {
+            return $this->cachePool;
+        }
+
+        $tries = 0;
+        $connectionException = null;
+
+        do {
+            $tries++;
+            try {
+                return $this->connectToCachePool();
+            } catch (\RedisException $e) {
+                $connectionException = $e;
+            }
+        } while (
+            !is_a($this->cachePool, 'ExtendedCacheItemPoolInterface')
+            && $tries < $this->settings['maxRetries']
+        );
+
+        throw CacheServiceException::connectionFailed(
+            $this->settings['driver'], $tries, $connectionException
+        );
+    }
+
+    /**
+     * @return ExtendedCacheItemPoolInterface
+     */
+    protected function connectToCachePool()
+    {
+        CacheManager::setDefaultConfig($this->settings['config']);
+        $this->cachePool = CacheManager::getInstance($this->settings['driver']);
+
+        return $this->cachePool;
     }
 }
