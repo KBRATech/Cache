@@ -153,7 +153,7 @@ class CacheService
      */
     protected function connectToCachePool()
     {
-        CacheManager::setDefaultConfig($this->settings['config']);
+        CacheManager::setDefaultConfig((array) $this->settings['config']);
         $this->cachePool = CacheManager::getInstance($this->settings['driver']);
 
         return $this->cachePool;
