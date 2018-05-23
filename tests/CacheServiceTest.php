@@ -45,7 +45,7 @@ class CacheServiceTest extends TestCase
         /** @var CacheService */
         $this->cacheService = $this->getMockBuilder(CacheService::class)
             ->setConstructorArgs([$this->settings])
-            ->setMethods(['connect'])
+            ->setMethods(['connectToCachePool'])
             ->getMock();
 
         $this->ttl = CacheManager::getDefaultConfig()['defaultTtl'];
@@ -56,7 +56,7 @@ class CacheServiceTest extends TestCase
         $redisException = new \RedisException();
         $this->cacheService
             ->expects($this->exactly($this->settings['maxRetries']))
-            ->method('connect')
+            ->method('connectToCachePool')
             ->will($this->throwException($redisException));
 
         $this->expectException(CacheServiceException::class);
@@ -87,7 +87,7 @@ class CacheServiceTest extends TestCase
 
         $this->cacheService
             ->expects($this->any())
-            ->method('connect')
+            ->method('connectToCachePool')
             ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
@@ -126,7 +126,7 @@ class CacheServiceTest extends TestCase
 
         $this->cacheService
             ->expects($this->any())
-            ->method('connect')
+            ->method('connectToCachePool')
             ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
@@ -167,7 +167,7 @@ class CacheServiceTest extends TestCase
 
         $this->cacheService
             ->expects($this->any())
-            ->method('connect')
+            ->method('connectToCachePool')
             ->will($this->returnValue($this->cachePool));
 
         $this->cachePool
@@ -188,7 +188,7 @@ class CacheServiceTest extends TestCase
 
         $this->cacheService
             ->expects($this->any())
-            ->method('connect')
+            ->method('connectToCachePool')
             ->will($this->returnValue($this->cachePool));
 
         $this->cachePool

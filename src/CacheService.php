@@ -118,10 +118,7 @@ class CacheService
      */
     public function connect()
     {
-        CacheManager::setDefaultConfig($this->settings['config']);
-        $this->cachePool = CacheManager::getInstance($this->settings['driver']);
-
-        return $this->cachePool;
+        return $this->getCachePool();
     }
 
     /**
@@ -140,7 +137,7 @@ class CacheService
         do {
             $tries++;
             try {
-                return $this->connect();
+                return $this->connectToCachePool();
             } catch (\RedisException $e) {
                 $connectionException = $e;
             }
@@ -152,5 +149,16 @@ class CacheService
         throw CacheServiceException::connectionFailed(
             $this->settings['driver'], $tries, $connectionException
         );
+    }
+
+    /**
+     * @return ExtendedCacheItemPoolInterface
+     */
+    protected function connectToCachePool()
+    {
+        CacheManager::setDefaultConfig($this->settings['config']);
+        $this->cachePool = CacheManager::getInstance($this->settings['driver']);
+
+        return $this->cachePool;
     }
 }
