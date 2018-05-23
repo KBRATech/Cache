@@ -22,17 +22,29 @@ Set the configuration based on your cache driver. Using Redis, your config might
 ```
 $settings = [
     'driver' => 'redis',
+    'maxRetries' => 3,
     'config' => [
         'defaultTtl' => 900,
         'host' => 'cache.example.com',
         'port' => 6379,
         'database' => 11,
         'password' => 'SuperSecretPassword',
+        'timeout' => 3,
     ],
 ];
 
 $cacheService = new CacheService($settings);
 ```
+
+*Right now this library only properly handles connection errors from Redis*
+
+You may choose to connect your cache driver manually:
+
+```
+$cacheService->connect();
+```
+
+But if you don't, a connection will be attempted the first time it is needed.
 
 To save data to the cache:
 
