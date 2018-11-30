@@ -1,13 +1,13 @@
 # KBRA Cache
 
-A simple cache library
+A simple PHP cache library
 
 ## Getting Started
 
 ### Prerequisites
 
 * PHP 5.6 or 7
-* Some [caching driver](https://github.com/PHPSocialNetwork/phpfastcache/blob/final/docs/DRIVERS.md) supported by phpfastcache
+* Some [caching driver](https://github.com/PHPSocialNetwork/phpfastcache#supported-drivers-at-this-day-) supported by phpfastcache
 
 ### Installing
 
@@ -52,7 +52,7 @@ To save data to the cache:
 $cacheService->set('some-data', $data);
 ```
 
-And to retrive it from the cache:
+And to retrieve it from the cache:
 
 ```
 $data = $cacheService->get('some-data');
@@ -98,13 +98,13 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/KBRATech/Cache/releases).
 
 ## Authors
 
 * **Erik Hierhager** - [ehierhager@kbra.com](mailto:ehierhager@kbra.com)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/KBRATech/Cache/contributors) who participated in this project.
 
 ## License
 
